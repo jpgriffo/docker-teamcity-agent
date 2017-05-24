@@ -1,6 +1,8 @@
 FROM selenium/standalone-chrome
+MAINTAINER Javi Perez-Griffo "javier.perez-griffo@ingrammicro.com"
 
 ENV RUBY_VERSION 2.2
+ENV GOLANG_VERSION 1.7
 ENV MONGO_VERSION 2.8.0-rc4
 ENV REDIS_VERSION 2.8.19
 
@@ -55,6 +57,13 @@ RUN curl -L https://get.rvm.io | bash -s stable && \
 			/bin/bash -l -c "rvm --default use $RUBY_VERSION" && \
 			rm -rf /var/lib/apt/lists/* /var/cache/apt/* && \
 			echo ". /etc/profile.d/rvm.sh" >> /root/.bashrc
+
+####
+# Golang
+####
+RUN curl -L https://raw.githubusercontent.com/moovweb/gvm/master/binscripts/gvm-installer  | bash -s  && \
+      /bin/bash -l -c "source /root/.gvm/scripts/gvm && gvm install go1.4 -B && gvm use go1.4 && export GOROOT_BOOTSTRAP=$GOROOT && gvm install go$GOLANG_VERSION && gvm use go$GOLANG_VERSION --default" && \
+      echo ". /root/.gvm/scripts/gvm" >> /root/.bashrc
 
 VOLUME  ["/root/.ssh"]
 
