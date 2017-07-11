@@ -24,7 +24,13 @@ xvfb-run -n $SERVERNUM --server-args="-screen 0 $GEOMETRY -ac +extension RANDR" 
   ${SE_OPTS} &
 NODE_PID=$!
 
+
 source /usr/local/rvm/scripts/rvm
+
+[ -e /etc/profile ] && source /etc/profile ;
+[ -e ~/.profile ] && source ~/.profile ;
+[ -e ~/.bash_profile ] && source ~/.bash_profile ;
+[ -e ~/.bashrc ] && source ~/.bashrc ;
 
 if [ "$1" = 'run' ]; then
         mongod --fork --logpath /dev/stdout --port 27017
