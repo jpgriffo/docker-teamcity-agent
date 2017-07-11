@@ -49,19 +49,15 @@ RUN curl -L https://get.rvm.io | bash -s stable && \
 			/bin/bash -l -c "rvm install $RUBY_VERSION" && \
 			/bin/bash -l -c "gem install bundler --no-ri --no-rdoc" && \
 			/bin/bash -l -c "rvm --default use $RUBY_VERSION" && \
-			rm -rf /var/lib/apt/lists/* /var/cache/apt/* && \
-			echo ". /etc/profile.d/rvm.sh" >> /root/.bashrc
+			rm -rf /var/lib/apt/lists/* /var/cache/apt/*
 
 ####
 # Golang
 ####
 RUN curl -L https://raw.githubusercontent.com/moovweb/gvm/master/binscripts/gvm-installer  | bash -s  && \
       /bin/bash -l -c "source /root/.gvm/scripts/gvm && gvm install go1.4 --binary && gvm use go1.4 && export GOROOT_BOOTSTRAP=$GOROOT && gvm install go$GOLANG_VERSION --binary && gvm use go$GOLANG_VERSION --default" && \
-      echo ". /root/.gvm/scripts/gvm" >> /root/.bashrc && \
       mkdir -p /home/golang/src/github.com/ingrammicro && \
       mkdir -p /home/golang/bin && \
-      echo "export GOPATH=\"/home/golang/\"" >> /root/.bashrc && \
-      echo "export PATH=\"\$PATH:/home/golang/bin\"" >> /root/.bashrc && \
       /bin/bash -l -c "source /root/.gvm/scripts/gvm && export GOPATH=\"/home/golang/\" && go get -u github.com/rancher/trash gopkg.in/cucumber/gherkin-go.v3 github.com/DATA-DOG/godog/cmd/godog github.com/golang/dep/cmd/dep"
 
 
@@ -89,5 +85,7 @@ EXPOSE 9090
 ADD docker-entrypoint.sh /entrypoint.sh
 ADD setup-agent.sh /setup-agent.sh
 ADD redis.conf /etc/redis.conf
+ADD go.sh /etc/profile.d/go.sh
+ADD nvm.sh /etc/profile.d/nvm.sh
 
 ENTRYPOINT ["/entrypoint.sh"]
