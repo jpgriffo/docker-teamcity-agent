@@ -24,13 +24,17 @@ xvfb-run -n $SERVERNUM --server-args="-screen 0 $GEOMETRY -ac +extension RANDR" 
   ${SE_OPTS} &
 NODE_PID=$!
 
+. /etc/profile.d/rvm.sh
 
-source /usr/local/rvm/scripts/rvm
+[[ -s "/root/.gvm/scripts/gvm" ]] && source "/root/.gvm/scripts/gvm"
+. /root/.gvm/scripts/gvm
+export GOPATH="/home/golang/"
+export PATH="$PATH:/home/golang/bin"
 
-[ -e /etc/profile ] && source /etc/profile ;
-[ -e ~/.profile ] && source ~/.profile ;
-[ -e ~/.bash_profile ] && source ~/.bash_profile ;
-[ -e ~/.bashrc ] && source ~/.bashrc ;
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+
+
 
 if [ "$1" = 'run' ]; then
         mongod --fork --logpath /dev/stdout --port 27017
