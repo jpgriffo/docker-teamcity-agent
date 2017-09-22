@@ -1,0 +1,10 @@
+--- set_name_of_domain.rb	2017-09-21 15:53:12.081489558 +0200
++++ set_name_of_domainv2.rb	2017-09-21 15:53:43.857575539 +0200
+@@ -53,6 +53,7 @@
+             else
+               config.default_prefix.to_s.dup.concat('_')
+             end
++	  domain_name = ''
+           domain_name << env[:machine].name.to_s
+           domain_name.gsub!(/[^-a-z0-9_\.]/i, '')
+           domain_name << "_#{Time.now.utc.to_i}_#{SecureRandom.hex(10)}" if config.random_hostname

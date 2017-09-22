@@ -2,7 +2,7 @@ FROM selenium/standalone-chrome
 MAINTAINER Javi Perez-Griffo "javier.perez-griffo@ingrammicro.com"
 
 ENV RUBY_VERSION 2.2
-ENV GOLANG_VERSION 1.7
+ENV GOLANG_VERSION 1.9
 ENV MONGO_VERSION 2.8.0-rc4
 ENV REDIS_VERSION 2.8.19
 ENV NODEJS_VERSION 6.9.1
@@ -44,6 +44,7 @@ RUN mkdir -p /usr/src/redis && \
 ####
 # Ruby
 ####
+RUN command curl -sSL https://rvm.io/mpapis.asc | gpg --import -
 RUN curl -L https://get.rvm.io | bash -s stable && \
 			/bin/bash -l -c "rvm requirements" && \
 			/bin/bash -l -c "rvm install $RUBY_VERSION" && \
@@ -80,6 +81,21 @@ RUN mkdir /tmp/phantomjs && \
   curl -L https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-$PHANTOMJS_VERSION-linux-x86_64.tar.bz2 \
         | tar -xj --strip-components=1 -C /tmp/phantomjs && \
   mv /tmp/phantomjs/bin/phantomjs /usr/local/bin && rm -rf /tmp/*
+
+####
+# Kitchen
+####
+ADD set_name_of_domain.patch /set_name_of_domain.patch
+RUN curl -Lo chefdk.deb https://packages.chef.io/files/stable/chefdk/2.3.1/ubuntu/16.04/chefdk_2.3.1-1_amd64.deb && \
+dpkg -i chefdk.deb && rm chefdk.deb && \
+curl -Lo vagrant.deb https://releases.hashicorp.com/vagrant/1.9.8/vagrant_1.9.8_x86_64.deb && \
+dpkg -i vagrant.deb && rm vagrant.deb && \
+apt update && \
+apt install -y libvirt-dev && \
+rm -rf /var/lib/apt/lists/* /var/cache/apt/* && \
+vagrant plugin install vagrant-libvirt && \
+patch /root/.vagrant.d/gems/2.3.4/gems/vagrant-libvirt-0.0.40/lib/vagrant-libvirt/action/set_name_of_domain.rb < /set_name_of_domain.patch
+
 
 
 VOLUME  ["/root/.ssh"]
