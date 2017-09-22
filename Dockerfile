@@ -44,8 +44,7 @@ RUN mkdir -p /usr/src/redis && \
 ####
 # Ruby
 ####
-RUN command curl -sSL https://rvm.io/mpapis.asc | gpg --import -
-RUN curl -L https://get.rvm.io | bash -s stable && \
+RUN command curl -sSL https://rvm.io/mpapis.asc | gpg --import - && curl -L https://get.rvm.io | bash -s stable && \
 			/bin/bash -l -c "rvm requirements" && \
 			/bin/bash -l -c "rvm install $RUBY_VERSION" && \
 			/bin/bash -l -c "gem install bundler --no-ri --no-rdoc" && \
