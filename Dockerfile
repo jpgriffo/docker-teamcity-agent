@@ -82,7 +82,7 @@ RUN mkdir /tmp/phantomjs && \
   mv /tmp/phantomjs/bin/phantomjs /usr/local/bin && rm -rf /tmp/*
 
 ####
-# Kitchen
+# Kitchen.
 ####
 ADD set_name_of_domain.patch /set_name_of_domain.patch
 RUN curl -Lo chefdk.deb https://packages.chef.io/files/stable/chefdk/2.3.1/ubuntu/16.04/chefdk_2.3.1-1_amd64.deb && \
