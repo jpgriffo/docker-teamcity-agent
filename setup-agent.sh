@@ -10,7 +10,7 @@ if [ -z "$TEAMCITY_SERVER" ]; then
     exit
 fi
 
-if [ ! -d "$AGENT_DIR" ]; then
+if [ ! -e "$AGENT_DIR/conf/buildAgent.properties" ]; then
     cd ${HOME}
     echo "Setting up TeamCityagent for the first time..."
     echo "Agent will be installed to ${AGENT_DIR}."
