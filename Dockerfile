@@ -1,11 +1,11 @@
 FROM selenium/standalone-chrome
 MAINTAINER Javi Perez-Griffo "javier.perez-griffo@ingrammicro.com"
 
-ENV RUBY_VERSION 2.2
-ENV GOLANG_VERSION 1.9
-ENV MONGO_VERSION 2.8.0-rc4
-ENV REDIS_VERSION 2.8.19
-ENV NODEJS_VERSION 6.9.1
+ENV RUBY_VERSION 2.5
+ENV GOLANG_VERSION 1.11.5
+ENV MONGO_VERSION 3.6.12 
+ENV REDIS_VERSION 5.0.5
+ENV NODEJS_VERSION 8.9.4
 ENV PHANTOMJS_VERSION 2.1.1
 
 USER root
@@ -44,10 +44,10 @@ RUN mkdir -p /usr/src/redis && \
 ####
 # Ruby
 ####
-RUN command curl -sSL https://rvm.io/mpapis.asc | gpg --import - && curl -L https://get.rvm.io | bash -s stable && \
+RUN command curl -sSL https://rvm.io/pkuczynski.asc | gpg --import - && curl -L https://get.rvm.io | bash -s stable && \
 			/bin/bash -l -c "rvm requirements" && \
 			/bin/bash -l -c "rvm install $RUBY_VERSION" && \
-			/bin/bash -l -c "gem install bundler --no-ri --no-rdoc" && \
+			/bin/bash -l -c "gem install bundler --no-document" && \
 			/bin/bash -l -c "rvm --default use $RUBY_VERSION" && \
 			rm -rf /var/lib/apt/lists/* /var/cache/apt/* && \
 			echo ". /etc/profile.d/rvm.sh" >> /root/.bashrc
@@ -56,7 +56,7 @@ RUN command curl -sSL https://rvm.io/mpapis.asc | gpg --import - && curl -L http
 # Golang
 ####
 RUN curl -L https://raw.githubusercontent.com/moovweb/gvm/master/binscripts/gvm-installer  | bash -s  && \
-      /bin/bash -l -c "source /root/.gvm/scripts/gvm && gvm install go1.4 --binary && gvm use go1.4 && export GOROOT_BOOTSTRAP=$GOROOT && gvm install go$GOLANG_VERSION --binary && gvm use go$GOLANG_VERSION --default" && \
+      /bin/bash -l -c "source /root/.gvm/scripts/gvm && gvm install go$GOLANG_VERSION --binary && gvm use go$GOLANG_VERSION --default" && export GOROOT_BOOTSTRAP=$GOROOT && \
       echo ". /root/.gvm/scripts/gvm" >> /root/.bashrc && \
       mkdir -p /home/golang/src/github.com/ingrammicro && \
       mkdir -p /home/golang/bin && \
@@ -68,7 +68,7 @@ RUN curl -L https://raw.githubusercontent.com/moovweb/gvm/master/binscripts/gvm-
 ####
 # Nodejs
 ####
-run curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh | bash && \
+run curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.34.0/install.sh | bash && \
   export NVM_DIR="$HOME/.nvm" && [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" && \
   nvm install $NODEJS_VERSION && nvm install 4.2.6 && nvm alias default 4.2.6 && \
   npm install -g coffee-script
@@ -84,16 +84,16 @@ RUN mkdir /tmp/phantomjs && \
 ####
 # Kitchen.
 ####
-ADD set_name_of_domain.patch /set_name_of_domain.patch
-RUN curl -Lo chefdk.deb https://packages.chef.io/files/stable/chefdk/2.3.1/ubuntu/16.04/chefdk_2.3.1-1_amd64.deb && \
-dpkg -i chefdk.deb && rm chefdk.deb && \
-curl -Lo vagrant.deb https://releases.hashicorp.com/vagrant/1.9.8/vagrant_1.9.8_x86_64.deb && \
-dpkg -i vagrant.deb && rm vagrant.deb && \
-apt update && \
-apt install -y libvirt-dev && \
-rm -rf /var/lib/apt/lists/* /var/cache/apt/* && \
-vagrant plugin install vagrant-libvirt && \
-patch /root/.vagrant.d/gems/2.3.4/gems/vagrant-libvirt-0.0.40/lib/vagrant-libvirt/action/set_name_of_domain.rb < /set_name_of_domain.patch
+#ADD set_name_of_domain.patch /set_name_of_domain.patch
+#RUN curl -Lo chefdk.deb https://packages.chef.io/files/stable/chefdk/2.3.1/ubuntu/16.04/chefdk_2.3.1-1_amd64.deb && \
+#dpkg -i chefdk.deb && rm chefdk.deb && \
+#curl -Lo vagrant.deb https://releases.hashicorp.com/vagrant/1.9.8/vagrant_1.9.8_x86_64.deb && \
+#dpkg -i vagrant.deb && rm vagrant.deb && \
+#apt update && \
+#apt install -y libvirt-dev && \
+#rm -rf /var/lib/apt/lists/* /var/cache/apt/* && \
+#vagrant plugin install vagrant-libvirt && \
+#patch /root/.vagrant.d/gems/2.3.4/gems/vagrant-libvirt-0.0.40/lib/vagrant-libvirt/action/set_name_of_domain.rb < /set_name_of_domain.patch
 
 
 
@@ -101,8 +101,10 @@ VOLUME  ["/root/.ssh"]
 
 EXPOSE 9090
 
-ADD docker-entrypoint.sh /entrypoint.sh
-ADD setup-agent.sh /setup-agent.sh
-ADD redis.conf /etc/redis.conf
+COPY docker-entrypoint.sh /entrypoint.sh
+COPY setup-agent.sh /setup-agent.sh
+COPY redis.conf /etc/redis.conf
+#COPY buildAgent.zip /buildAgent.zip
+#RUN mkdir /root/agent && cd /root/agent && unzip /buildAgent.zip && rm /buildAgent.zip
 
 ENTRYPOINT ["/entrypoint.sh"]

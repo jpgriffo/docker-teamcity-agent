@@ -40,7 +40,7 @@ if [ "$1" = 'run' ]; then
         mongod --fork --logpath /dev/stdout --port 27017
         redis-server /etc/redis.conf
         chmod +x /setup-agent.sh
-        sleep 30
+        sleep 5
         bash /setup-agent.sh run
 else
         exec "$@"
